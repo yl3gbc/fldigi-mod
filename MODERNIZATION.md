@@ -75,6 +75,9 @@ Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runti
 - `Atvērt` uz apakšsignāla rindas atver profilu un uzreiz strādā ar šo apakšsignālu šajā periodā.
 - Logā katram apakšsignālam redzams tikai pēdējais periods. Kad pasākums beidzies un ar to pašu apakšsignālu strādā no jauna, vecā perioda ADIF tiek pārvietots uz `~/.fldigi/profiles/<CALL>/archive/` un logā vairs nav redzams; fails netiek dzēsts.
 - Profila logā ir poga `Arhīvs`, kas parāda arhivētos periodus tikai lasīšanai, lai nejauši nepārrakstītu nevienu QSO.
+- Profila rediģēšanas logā ir cilnes `Stacija`, `Radio`, `Audio` un `Kontests`. `Stacija`: izsaukuma signāls (rakstot automātiski lielie burti), vārds, QTH, lokators, antena, piezīme un neobligāti alternatīvie izsaukuma signāli. `Radio` kā JTDX/WSJT-X: ražotājs, modelis, CAT ports, ātrums, `Test CAT`, PTT `VOX / CAT / DTR / RTS`, ports, `Tx delay`, tonis pirms raidīšanas (`pretone`), `Share PTT port`, `Test PTT`. `Audio`: Input un Output ierīce; tehniskie parametri paliek Advanced.
+- Cilnē `Kontests` tiek savākti visi kontesta iestatījumi no visas programmas (pašreizējās Configure lapas `Contests/General`, `Contests/Info`, `Contests/Categories`, `Contests/Field Day`, `Contests/JOTA School`).
+- Sacensībās QSO uzreiz aiziet uz žurnālu pa UDP. Kontesta režīma QSO tiek rakstīti neatkarīgā ADIF failā tā profila mapē ar sacensību nosaukumu un gadu, piem. `~/.fldigi/profiles/YL3GBC/cq_ww_rtty_2026.adif`; sacensību beigās no tiem tiek izveidots Cabrillo fails.
 
 ## CW / RTTY / PSK makrosu varianti
 - Izmantojam jau esošo fldigi makrosu paneli un tā fiziskos makrosu taustiņus; jaunu makrosu paneli neveidojam.
