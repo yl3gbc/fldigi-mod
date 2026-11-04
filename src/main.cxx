@@ -87,6 +87,7 @@ extern Fl_Scroll       *wefax_pic_rx_scroll;
 #include "confdialog.h"
 #include "rxmon.h"
 #include "configuration.h"
+#include "profile_dialog.h"
 #include "macros.h"
 #include "status.h"
 #include "fileselect.h"
@@ -143,7 +144,6 @@ string scDevice[2];
 
 string BaseDir = "";
 string HomeDir = "";
-static string ProfileCallsign = "";
 string RigsDir = "";
 string ScriptsDir = "";
 string PalettesDir = "";
@@ -1125,14 +1125,6 @@ int main (int argc, char *argv[])
 	LOG_INFO("FLMSG_ICS_tmp_dir: %s", FLMSG_ICS_tmp_dir.c_str());
 
 	bool have_config = progdefaults.readDefaultsXML();
-	if (!ProfileCallsign.empty()) {
-		std::string profile_error;
-		if (!progdefaults.openProfile(ProfileCallsign, profile_error)) {
-			LOG_ERROR("Profile %s: %s", ProfileCallsign.c_str(), profile_error.c_str());
-			std::cerr << "fldigi: profile " << ProfileCallsign << ": " << profile_error << "\n";
-			exit(EXIT_FAILURE);
-		}
-	}
 	check_overrides();
 
 	xmlfname = HomeDir;
@@ -1153,6 +1145,19 @@ int main (int argc, char *argv[])
 
 	font_browser = new Font_Browser;
 	progdefaults.initFonts();
+
+	// Station profile: mandatory, chosen in the profile window
+	{
+		std::string profile_call = profile_select_dialog(HomeDir + "profiles/");
+		if (profile_call.empty())
+			exit(EXIT_SUCCESS);
+		std::string profile_error;
+		if (!progdefaults.openProfile(profile_call, profile_error)) {
+			LOG_ERROR("Profile %s: %s", profile_call.c_str(), profile_error.c_str());
+			fl_alert(_("Profile %s: %s"), profile_call.c_str(), profile_error.c_str());
+			exit(EXIT_FAILURE);
+		}
+	}
 
 	if (progdefaults.cty_dat_pathname.empty())
 		progdefaults.cty_dat_pathname = HomeDir;
@@ -1340,7 +1345,6 @@ LOG_INFO("thread %d", i);
 	}
 LOG_INFO("FSEL::destroy()");
 	FSEL::destroy();
-
 	progdefaults.closeProfile();
 }
 
@@ -1368,9 +1372,6 @@ void generate_option_help(void) {
 		 << "  --config-dir DIRECTORY\n"
 		 << "    Look for configuration files in DIRECTORY\n"
 		 << "    The default is: " << disp_base_dir << ".fldigi/\n\n"
-		 << "  --profile CALLSIGN\n"
-		 << "    Use the station profile CALLSIGN (base callsign) from\n"
-		 << "    the profiles folder in the configuration directory\n\n"
 #else
 		 << "  --home-dir FOLDER\n"
 		 << "    Set the home folder to full pathname of FOLDER\n"
@@ -1573,7 +1574,6 @@ int parse_args(int argc, char **argv, int& idx)
 #endif
 	   OPT_HOME_DIR,
 	   OPT_CONFIG_DIR,
-	   OPT_PROFILE,
 	   OPT_ARQ_ADDRESS, OPT_ARQ_PORT,
 	   OPT_SHOW_CPU_CHECK,
 	   OPT_FLMSG_DIR,
@@ -1616,7 +1616,6 @@ int parse_args(int argc, char **argv, int& idx)
 #endif
 		{ "home-dir",	   1, 0, OPT_HOME_DIR },
 		{ "config-dir",	   1, 0, OPT_CONFIG_DIR },
-		{ "profile",	   1, 0, OPT_PROFILE },
 
 		{ "arq-server-address", 1, 0, OPT_ARQ_ADDRESS },
 		{ "arq-server-port",    1, 0, OPT_ARQ_PORT },
@@ -1721,10 +1720,6 @@ int parse_args(int argc, char **argv, int& idx)
 		}
 			if (*HomeDir.rbegin() != '/')
 				   HomeDir += '/';
-			break;
-
-		case OPT_PROFILE:
-			ProfileCallsign = optarg;
 			break;
 
 		case OPT_ARQ_ADDRESS:

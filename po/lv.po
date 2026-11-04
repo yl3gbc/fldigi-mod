@@ -1,0 +1,84 @@
+# Latvian translation file for Fldigi.
+# This file is distributed under the same license as the Fldigi package.
+# Arnis YL3GBC, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fldigi 4.2.13\n"
+"Report-Msgid-Bugs-To: w1hkj AT w1hkj DOT com\n"
+"POT-Creation-Date: 2026-11-04 20:00+0200\n"
+"PO-Revision-Date: 2026-11-04 20:00+0200\n"
+"Last-Translator: Arnis YL3GBC\n"
+"Language-Team: Latvian\n"
+"Language: lv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);\n"
+
+#: src/main.cxx
+#, c-format
+msgid "Profile %s: %s"
+msgstr "Profils %s: %s"
+
+#: src/profiles/profile_dialog.cxx
+msgid "A profile must be a base callsign: letters and digits only, no '/'."
+msgstr "Profilam jābūt pamata izsaukuma signālam: tikai burti un cipari, bez '/'."
+
+#: src/profiles/profile_dialog.cxx
+#, c-format
+msgid "Profile %s already exists."
+msgstr "Profils %s jau ir."
+
+#: src/profiles/profile_dialog.cxx
+#, c-format
+msgid ""
+"Could not create profile %s:\n"
+"%s"
+msgstr ""
+"Neizdevās izveidot profilu %s:\n"
+"%s"
+
+#: src/profiles/profile_dialog.cxx
+msgid "New profile"
+msgstr "Jauns profils"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Callsign:"
+msgstr "Izsaukuma signāls:"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Note:"
+msgstr "Piezīme:"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Cancel"
+msgstr "Atcelt"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Create"
+msgstr "Izveidot"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Select a profile or create a new one."
+msgstr "Izvēlies profilu vai izveido jaunu."
+
+#: src/profiles/profile_dialog.cxx
+msgid "Select profile"
+msgstr "Profila izvēle"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Callsign"
+msgstr "Izsaukuma signāls"
+
+#: src/profiles/profile_dialog.cxx
+msgid "QSOs"
+msgstr "QSO"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Note"
+msgstr "Piezīme"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Open"
+msgstr "Atvērt"

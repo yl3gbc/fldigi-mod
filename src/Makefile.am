@@ -497,7 +497,7 @@ tmp_srcdir_var=$(srcdir)
 TESTS = $(tmp_srcdir_var)/../scripts/tests/config-h.sh $(tmp_srcdir_var)/../scripts/tests/cr.sh
 
 # Profile storage (DuckDB)
-fldigi_SOURCES += include/profile_store.h profiles/profile_store.cxx
+fldigi_SOURCES += include/profile_store.h profiles/profile_store.cxx include/profile_dialog.h profiles/profile_dialog.cxx
 check_PROGRAMS = test_profile_store
 test_profile_store_SOURCES = profiles/test_profile_store.cxx profiles/profile_store.cxx include/profile_store.h
 test_profile_store_CPPFLAGS = -I$(srcdir)/include @DUCKDB_CFLAGS@
