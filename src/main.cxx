@@ -1340,6 +1340,8 @@ LOG_INFO("thread %d", i);
 	}
 LOG_INFO("FSEL::destroy()");
 	FSEL::destroy();
+
+	progdefaults.closeProfile();
 }
 
 void generate_option_help(void) {

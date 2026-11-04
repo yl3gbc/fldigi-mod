@@ -2834,6 +2834,7 @@ struct configuration
     // HomeDir/profiles/<CALL>/<call>.duckdb; all other fields stay in
     // fldigi_def.xml.
     bool openProfile(const std::string& callsign, std::string& error);
+    void closeProfile(void);
     bool profileActive(void) const;
     std::string profileCallsign(void) const;
 };
