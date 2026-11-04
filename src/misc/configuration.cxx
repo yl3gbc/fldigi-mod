@@ -29,6 +29,7 @@
 #include <config.h>
 
 #include "configuration.h"
+#include "profile_store.h"
 #include "ui_colors.h"
 #include "confdialog.h"
 #include "xmlreader.h"
@@ -145,6 +146,8 @@ public:
 	tag_base(const char* t, const char* d = "") : tag(t), doc(d) { }
 	virtual void write(std::ostream& out) const = 0;
 	virtual void read(const char* data) = 0;
+	// Raw value as text, the same text read() accepts.
+	virtual std::string value() const = 0;
 	virtual ~tag_base() { }
 	const char* tag;
 	const char* doc;
@@ -165,6 +168,12 @@ public:
 	{
 		std::istringstream iss(data);
 		iss >> var;
+	}
+	std::string value() const
+	{
+		std::ostringstream oss;
+		oss << var;
+		return oss.str();
 	}
 	T& var;
 };
@@ -214,6 +223,7 @@ public:
 		    << '<' << tag << '>' << s << "</" << tag << ">\n\n";
 	}
 	void read(const char* data) { str = data; }
+	std::string value() const { return str; }
 	std::string& str;
 };
 
@@ -251,6 +261,15 @@ public:
 			p = sdata.find(",");
 		}
 	}
+	std::string value() const
+	{
+		std::string v;
+		for (size_t i = 0; i < modes.size(); i++) {
+			if (!modes.test(i))
+				v.append(mode_info[i].name).append(",");
+		}
+		return v.append(",");
+	}
 	mode_set_t& modes;
 };
 
@@ -272,8 +291,182 @@ public:
 configuration progdefaults = { CONFIG_LIST };
 
 
+// Fields that belong to a station profile (see MODERNIZATION.md, profile
+// field split), identified by their fldigi_def.xml tag.
+static const char* profile_tags[] = {
+	// Station (6)
+	"MYCALL", "MYQTH", "MYNAME", "MYLOC", "MYANTENNA", "OPERCALL",
+	// Contest (28)
+	"CONTESTCALL", "CONTESTOPERATORS", "CONTESTLOCATOR", "CONTESTCLUB",
+	"CONTESTNAME", "CONTESTADDRESS", "CONTESTCITY", "CONTESTPOSTALCODE",
+	"CONTESTEMAIL", "CONTESTSOAPBOX", "CONTESTDARCDOK", "CONTESTASSISTED",
+	"CONTESTBAND", "CONTESTMODE", "CONTESTOPERATOR", "CONTESTPOWER",
+	"CONTESTSTATION", "CONTESTTRANSMITTER", "MYXCGH", "TXPOWER", "FD_CALL",
+	"FD_OP_CALL", "FDCLASS", "FDSECTION", "FDMULT", "MY_SCR_CLASS",
+	"MY_JOTA_TROOP", "MY_JOTA_SCOUT",
+	// Radio / CAT (47)
+	"CHKUSEHAMLIBIS", "CHKUSERIGCATIS", "CHKUSEXMLRPCIS",
+	"FLRIG_KEYS_MODEM", "CLIENT_TO_FLRIG", "HAMRIGDEVICE", "HAMRIGNAME",
+	"HAMRIGMODEL", "HAMCONFIG", "HAMRIGBAUDRATE", "HAMRIGSTOPBITS",
+	"HAMRIGPOLLRATE", "HAMLIBPTTONDATA", "HAMLIB_CW_ISLSB",
+	"HAMLIB_RTTY_ISUSB", "HAMRIG_MODE_DELAY", "HAMLIBRTSPLUS",
+	"HAMLIBDTRPLUS", "HAMLIBRTSCTSFLOW", "HAMLIBXONXOFFFLOW",
+	"HAMLIBRETRIES", "HAMLIBTIMEOUT", "HAMLIBWAIT", "HAMLIBWRITEDELAY",
+	"HAMLIBSIDEBAND", "XMLRIGFILENAME", "XMLRIGDEVICE", "XMLRIGBAUDRATE",
+	"RIGCATSTOPBITS", "RIGCATRTSPLUS", "RIGCATDTRPLUS", "RIGCATRTSPTT",
+	"RIGCATDTRPTT", "RIGCATRTSCTSFLOW", "RIGCATRETRIES", "RIGCATTIMEOUT",
+	"RIGCATWAIT", "RIGCATINITDELAY", "RIGCATECHO", "RIGCATVSP",
+	"RIGCATRESTORETIO", "FLRIG_AUTO_SHUTDOWN", "BTNUSB",
+	"FLRIG_IP_ADDRESS", "FLRIG_IP_PORT", "FLRIG_POLL", "PRETONE",
+	// PTT (17)
+	"RTSPTT", "DTRPTT", "RTSPLUS", "DTRPLUS", "TTYPTT", "HAMLIBCMDPTT",
+	"RIGCATCMDPTT", "USEUHROUTERPTT", "USEPPORTPTT", "PTTDEV",
+	"PTTRIGHTCHANNEL", "SCU_17", "PTTONDELAY", "PTTOFFDELAY", "CMEDIA-PTT",
+	"CMEDIA_DEVICE", "CMEDIA_GPIO_LINE",
+	// Audio (19)
+	"AUDIOIO", "OSSDEVICE", "PADEVICE", "PORTINDEVICE", "PORTININDEX",
+	"PORTOUTDEVICE", "PORTOUTINDEX", "PULSESERVER", "IS_FULL_DUPLEX",
+	"SAMPLERATE", "INSAMPLERATE", "OUTSAMPLERATE", "RXCORR", "TXCORR",
+	"TXOFFSET", "REVERSEAUDIO", "REVERSERXAUDIO", "SIGONRIGHTCHANNEL",
+	"RX_GAIN",
+	// CW / FSK keying hardware (53)
+	"CWKEYLINE", "CW_KEYLINE_SERIAL_PORT_NAME", "CW_KEYLINE_CHANGED",
+	"CW_KEYLINE_on_cat_port", "CW_KEYLINE_on_ptt_port", "PTTKEYLINE",
+	"CWkeycomp", "USE_KYWDKEYING", "USE_ELCTKEYING", "USE_ICOMKEYING",
+	"ICOMcivaddr", "USE_YAESUKEYING", "use_FLRIGkeying", "CATKEYINGCOMP",
+	"CATKEYING_disable_ptt", "NANOSERIALPORTNAME", "NANOIOBAUD",
+	"NANOIOPOLARITY", "NANOIO_SERBAUD", "NANOIOCWINCR", "NANOIOCWKEYER",
+	"nanoIO_speed_pot", "nanoCW_test_wpm", "usec_corr", "disable_CW_PTT",
+	"NANOCWKEYSPEED", "USEFSK", "FSK_SHARES_PORT", "FSK_PORT",
+	"FSK_REVERSE", "FSK_ON_DTR", "FSK_SHIFT_ON_SPACE", "FSK_STOPBITS",
+	"FLRIG_FSK", "FLRIG_FSK_IDLES", "FLRIG_FSK_BAUD", "FLRIG_FSK_STOPBITS",
+	"XCVRFSKSIDEBAND", "XCVRFSKMARK", "NAVFSKPORT", "NAVCONFIGPORT",
+	"NAVFSKBAUD", "NAVFSKSIDETONE", "NAVFSKPTT", "NAVFSKPOLARITY",
+	"NAVFSKSTOPBITS", "NAVCH2ATT", "NAVCH1ATT", "NAVRFATT", "NAVLED",
+	"NAVCATLED", "NAVWKPTT", "WK_K3NGsketch",
+	// qrz.com / HamQTH (4)
+	"QRZUSER", "QRZPASSWORD", "QRZXMLTYPE", "QRZWEBTYPE",
+	// Control ADIF and UDP log (4)
+	"LOGBOOKFILENAME", "UDP_LOG_ADDRESS", "UDP_LOG_PORT",
+	"ENABLE_UDP_LOGGING",
+};
+
+static ProfileStore* profile_store = 0;
+// fldigi_def.xml values of the profile fields, kept while a profile is open
+// so that saving writes them back unchanged to fldigi_def.xml.
+static std::map<std::string, std::string> profile_global_values;
+
+#undef ELEM_
+#define ELEM_ ELEM_TAG_ARRAY
+
+bool configuration::openProfile(const std::string& callsign, std::string& error)
+{
+	std::string root(HomeDir);
+	root.append("profiles/");
+
+	ProfileStore* store = new ProfileStore;
+	if (!store->open(root, callsign)) {
+		error = store->last_error();
+		delete store;
+		return false;
+	}
+
+	tag_base* tag_list[] = { CONFIG_LIST };
+	std::map<std::string, tag_base*> tag_map;
+	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++)
+		if (tag_list[i])
+			tag_map[tag_list[i]->tag] = tag_list[i];
+
+	std::map<std::string, std::string> settings;
+	bool ok = store->get_all_settings(settings);
+	std::map<std::string, std::string> globals;
+	for (size_t i = 0; ok && i < sizeof(profile_tags)/sizeof(*profile_tags); i++) {
+		std::map<std::string, tag_base*>::iterator t = tag_map.find(profile_tags[i]);
+		if (t == tag_map.end())
+			continue;
+		globals[t->first] = t->second->value();
+		if (settings.empty())
+			// New profile: start from the current configuration.
+			ok = store->set_setting(t->first, globals[t->first]);
+		else {
+			std::map<std::string, std::string>::const_iterator v = settings.find(t->first);
+			if (v != settings.end())
+				t->second->read(v->second.c_str());
+		}
+	}
+	if (!ok)
+		error = store->last_error();
+
+	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++)
+		delete tag_list[i];
+
+	if (!ok) {
+		delete store;
+		return false;
+	}
+
+	delete profile_store;
+	profile_store = store;
+	profile_global_values = globals;
+	LOG_INFO("Profile %s: %s", store->callsign().c_str(),
+		 ProfileStore::db_path(root, store->callsign()).c_str());
+	return true;
+}
+
+bool configuration::profileActive(void) const
+{
+	return profile_store != 0;
+}
+
+std::string configuration::profileCallsign(void) const
+{
+	return profile_store ? profile_store->callsign() : std::string();
+}
+
+// While a profile is open: put the fldigi_def.xml values of the profile fields
+// back before fldigi_def.xml is written, and return the profile values.
+static std::map<std::string, std::string> profile_swap_out(void)
+{
+	std::map<std::string, std::string> current;
+	tag_base* tag_list[] = { CONFIG_LIST };
+	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++) {
+		if (!tag_list[i])
+			continue;
+		std::map<std::string, std::string>::const_iterator g = profile_global_values.find(tag_list[i]->tag);
+		if (g != profile_global_values.end()) {
+			current[g->first] = tag_list[i]->value();
+			tag_list[i]->read(g->second.c_str());
+		}
+		delete tag_list[i];
+	}
+	return current;
+}
+
+// Put the profile values back after fldigi_def.xml is written and store them
+// in the profile database.
+static void profile_swap_in(const std::map<std::string, std::string>& current)
+{
+	tag_base* tag_list[] = { CONFIG_LIST };
+	for (size_t i = 0; i < sizeof(tag_list)/sizeof(*tag_list); i++) {
+		if (!tag_list[i])
+			continue;
+		std::map<std::string, std::string>::const_iterator c = current.find(tag_list[i]->tag);
+		if (c != current.end()) {
+			tag_list[i]->read(c->second.c_str());
+			if (!profile_store->set_setting(c->first, c->second))
+				LOG_ERROR("Profile %s: %s", profile_store->callsign().c_str(),
+					  profile_store->last_error().c_str());
+		}
+		delete tag_list[i];
+	}
+}
+
 void configuration::writeDefaultsXML()
 {
+	std::map<std::string, std::string> profile_values;
+	if (profile_store)
+		profile_values = profile_swap_out();
+
 	std::string deffname(HomeDir);
 	deffname.append("fldigi_def.xml");
 
@@ -303,6 +496,9 @@ void configuration::writeDefaultsXML()
 	}
 	f << "</FLDIGI_DEFS>\n";
 	f.close();
+
+	if (profile_store)
+		profile_swap_in(profile_values);
 }
 
 static void log_excluded_modes(void)

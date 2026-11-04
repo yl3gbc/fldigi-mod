@@ -2829,6 +2829,13 @@ struct configuration
     int  BaudRate(size_t);
     int  nBaudRate(const char *);
     void initFonts(void);
+
+    // Station profile (see MODERNIZATION.md). Profile fields are kept in
+    // HomeDir/profiles/<CALL>/<call>.duckdb; all other fields stay in
+    // fldigi_def.xml.
+    bool openProfile(const std::string& callsign, std::string& error);
+    bool profileActive(void) const;
+    std::string profileCallsign(void) const;
 };
 
 extern configuration progdefaults;
