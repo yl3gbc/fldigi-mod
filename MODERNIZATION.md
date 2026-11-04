@@ -22,11 +22,11 @@ Configure tiek organizēts pēc lietotāja uzdevumiem: `Radio`, `PTT`, `Audio`, 
 ## Radio, PTT un audio
 Radio sadaļā lietotājs izvēlas ražotāju un modeli, tehniskās Hamlib detaļas pēc iespējas nosakām automātiski. PTT pēc JTDX principa: savstarpēji izslēdzoši `VOX`, `CAT`, `DTR`, `RTS`, kā arī `Port`, `Share PTT port`, `Test PTT`, `Tx delay`. Audio pamata skatā tikai saprotami nosaukti Input/Output device; backend, sample rate, bufferi, latency un device string paliek Advanced.
 
-## Logbook un DuckDB
-Pašreizējais fldigi balstās uz ADIF failu un iekšējām C++ QSO struktūrām. Modernizācijā DuckDB kļūst par strukturētu logbook datu slāni, bet ADIF paliek importa, eksporta, backup un savietojamības formāts. QSO modelim jāatbalsta visi fldigi režīmi. Meklēšanai jāatbalsta callsign, band, frequency, mode, submode, datums, laiks, QTH, locator, profils, LoTW/ClubLog statusi un citi lauki. Precīzo DB shēmu definējam tikai pēc esošā logbook koda izpētes.
+## Logbook un QSO nodošana
+fldigi nav un nebūs savas logbook. `logbook.adif` fails, tā ielasīšana un saglabāšana un logbook logs tiek izņemti. QSO tiek nodots ārējam žurnālam pa UDP kā ADIF ieraksts (esošais `post_udp_log()`). Visi Mac un Linux žurnāli atbalsta UDP; mērķis ir vienkārša un pareiza UDP pieslēgšana un konfigurācija. Dažiem žurnāliem UDP adrese un ports jāievada manuāli, tāpēc konfigurācijā tie paliek rediģējami. Jāuzraksta rokasgrāmatas, kā fldigi pieslēgt un nokonfigurēt UDP savienojumu ar katru populāro Mac un Linux žurnālu. Dublikātu pārbaude pagaidām notiek caur KLog. Sūtīšanu uz eQSL, LoTW, ClubLog, QRZ un citiem tiešsaistes žurnāliem veic KLog vai cits žurnāls; fldigi šīs funkcijas tiek izņemtas.
 
-## KLog integrācija
-fldigi jāsadarbojas ar YL3GBC modernizēto KLog. Programmas nekontrolēti nedala vienu DuckDB failu. Primāri izpētām `Log QSO -> QSO Logged -> UDP -> KLog`, līdzīgi WSJT-X/JTDX. Rezerves savietojamībai KLog var sekot fldigi `logbook.adif` un apstrādāt tikai jaunus ierakstus. Abiem ceļiem KLog pusē jāizmanto viena QSO ievietošanas un dublikātu pārbaudes loģika. Jāizpēta arī vecā KLog/fldigi integrācija un fldigi XML-RPC.
+## Žurnālu integrācija
+fldigi sadarbojas ar jebkuru Mac un Linux radioamatieru žurnālu (ap 20 populāru, regulāri parādās jauni) caur UDP. YL3GBC modernizētais KLog ir galvenais testa žurnāls. Jāizpēta arī vecā KLog/fldigi integrācija un fldigi XML-RPC.
 
 ## Tulkojumi, migrācija un testēšana
 Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runtime gettext: `.ts -> .po/.mo`. Vecā konfigurācija nedrīkst pazust; paredzēta migrācija uz profilu modeli. Pēc katra lielā posma būvējam visu fldigi un izpildām visus testus; nedrīkst būt `SKIP`, `FAIL` vai `ERROR`. Saglabājam X11 bez obligāta Wayland.
@@ -39,14 +39,15 @@ Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runti
 5. Pārorganizēt Configure.
 6. Ieviest JTDX tipa PTT.
 7. Izpētīt veco KLog/fldigi integrāciju.
-8. Izpētīt fldigi logbook datu plūsmu.
-9. Definēt DuckDB QSO/profilu modeli.
-10. Ieviest DuckDB un ADIF savietojamību.
-11. Ieviest fldigi -> KLog integrāciju.
-12. Ieviest `.ts` tulkošanas plūsmu.
-13. Ieviest pirmās palaišanas vedni.
-14. Pilna regresijas un migrācijas testēšana.
-15. Sakārtot instalāciju un turpmāko SourceForge atjauninājumu integrāciju.
+8. Izpētīt fldigi logbook un UDP datu plūsmu.
+9. Definēt DuckDB profilu modeli.
+10. Izņemt fldigi logbook, `logbook.adif` un tiešsaistes žurnālu funkcijas.
+11. Sakārtot UDP QSO nodošanu žurnāliem.
+12. Uzrakstīt UDP pieslēgšanas un konfigurēšanas rokasgrāmatas žurnāliem.
+13. Ieviest `.ts` tulkošanas plūsmu.
+14. Ieviest pirmās palaišanas vedni.
+15. Pilna regresijas un migrācijas testēšana.
+16. Sakārtot instalāciju un turpmāko SourceForge atjauninājumu integrāciju.
 
 ## Profilu arhitektūras lēmums
 - `HomeDir` paliek globālā fldigi konfigurācijas sakne; profili nepārvieto visu `HomeDir`.
@@ -55,7 +56,7 @@ Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runti
 - Profilam pieder stacijas dati: callsign, QTH, vārds, locator un antena.
 - Profilam pieder Radio/CAT, PTT, audio ierīces, logbook ceļš un ar konkrēto staciju saistītās integrācijas.
 - GUI tēma, fonti, logu izmēri un citi programmas vispārīgie iestatījumi paliek globāli.
-- Katram profilam būs savs logbook datu konteksts; DuckDB shēmu definēsim pēc esošā logbook koda izpētes.
+- Profili un to iestatījumi glabājas DuckDB. Profilam pieder arī UDP žurnāla pieslēgums (adrese, ports).
 - JTDX tipa PTT `VOX / CAT / DTR / RTS` būs normalizēts lietotāja slānis virs esošās fldigi PTT loģikas.
 
 ## CW / RTTY / PSK makrosu varianti
