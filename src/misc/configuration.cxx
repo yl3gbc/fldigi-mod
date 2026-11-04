@@ -359,14 +359,6 @@ static std::map<std::string, std::string> profile_global_values;
 #undef ELEM_
 #define ELEM_ ELEM_TAG_ARRAY
 
-// Close the profile database at program exit, so DuckDB writes its
-// write-ahead log into the database file.
-static void profile_atexit(void)
-{
-	delete profile_store;
-	profile_store = 0;
-}
-
 bool configuration::openProfile(const std::string& callsign, std::string& error)
 {
 	std::string root(HomeDir);
@@ -411,12 +403,6 @@ bool configuration::openProfile(const std::string& callsign, std::string& error)
 	if (!ok) {
 		delete store;
 		return false;
-	}
-
-	static bool atexit_registered = false;
-	if (!atexit_registered) {
-		atexit(profile_atexit);
-		atexit_registered = true;
 	}
 
 	delete profile_store;
@@ -473,6 +459,21 @@ static void profile_swap_in(const std::map<std::string, std::string>& current)
 		}
 		delete tag_list[i];
 	}
+}
+
+// Close the profile database during fldigi shutdown, before exit(), so
+// DuckDB writes its write-ahead log into the database file. The
+// fldigi_def.xml values of the profile fields are put back first, so a
+// later save cannot write profile values into fldigi_def.xml.
+void configuration::closeProfile(void)
+{
+	if (!profile_store)
+		return;
+	profile_swap_out();
+	LOG_INFO("Profile %s closed", profile_store->callsign().c_str());
+	delete profile_store;
+	profile_store = 0;
+	profile_global_values.clear();
 }
 
 void configuration::writeDefaultsXML()
