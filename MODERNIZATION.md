@@ -58,6 +58,9 @@ Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runti
 - GUI tēma, fonti, logu izmēri un citi programmas vispārīgie iestatījumi paliek globāli.
 - Profili un to iestatījumi glabājas DuckDB. Profilam pieder arī UDP žurnāla pieslēgums (adrese, ports).
 - Profilam pieder savs kontroles ADIF fails; profila izvēles loga kolonna `QSO` rāda QSO skaitu no šī faila.
+- Profila lauku sadalījums (sākotnējais, vajadzības gadījumā mainām): stacija (6), kontesta dati (28), Radio/CAT ar flrig (48), PTT (17), audio ierīces un iestatījumi (19), CW/FSK atslēgošanas aparatūra (54), qrz.com/HamQTH pieejas dati (4), kontroles ADIF un UDP (4); kopā 180 `progdefaults` lauki. Princips: viss, kas saistīts ar staciju, radio vai tā interfeisu, pieder profilam.
+- Globāli paliek brīdinājumu skaņa, GPIO (Raspberry Pi / Orange Pi), modemu iestatījumi, serveru URL, UI, krāsas, fonti un waterfall.
+- WinKeyer sakaru iestatījumi glabājas `progStatus` (`fldigi.prefs`), nevis `progdefaults`, tāpēc profila slānim jāaptver arī tie.
 - JTDX tipa PTT `VOX / CAT / DTR / RTS` būs normalizēts lietotāja slānis virs esošās fldigi PTT loģikas.
 
 ## CW / RTTY / PSK makrosu varianti
