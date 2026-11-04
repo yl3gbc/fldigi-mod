@@ -14,7 +14,7 @@ Modernizēt fldigi, saglabājot tā modemu, DSP un radioamatieru funkcionalitāt
 - Pašlaik pārbaudīts: fldigi 4.2.13; FLTK 1.4.5 ar X11 ON un Wayland OFF; statisks PortAudio ar ALSA, PulseAudio un sndio; 2 PASS, 0 SKIP, 0 FAIL, 0 ERROR; Python 3.14.7 caur uv; DuckDB development C API.
 
 ## Profili
-Profili tiek veidoti pēc YL3GBC modernizētā KLog principa. Paredzēts atsevišķs `Profila izvēle` logs ar `Izsaukuma signāls | QSO | Piezīme`, pogām `Atvērt`, `Atcelt`, `Jauns profils`, `Rediģēt`, `Dzēst` un automātiskas atvēršanas opciju. Katram profilam būs savi callsign, QTH, locator, radio/Hamlib, CAT, PTT, audio, logbook un integrāciju iestatījumi. Programmas vispārīgie GUI parametri paliek globāli.
+Profili tiek veidoti pēc YL3GBC modernizētā KLog principa. Paredzēts atsevišķs `Profila izvēle` logs ar `Izsaukuma signāls | QSO | Piezīme`, pogām `Atvērt`, `Atcelt`, `Jauns profils`, `Rediģēt`, `Dzēst`. Automātiskas atvēršanas nav: profils jāizvēlas katrā palaišanā. Katram profilam būs savi callsign, QTH, locator, radio/Hamlib, CAT, PTT, audio, logbook un integrāciju iestatījumi. Programmas vispārīgie GUI parametri paliek globāli.
 
 ## Konfigurācijas pārbūve
 Configure tiek organizēts pēc lietotāja uzdevumiem: `Radio`, `PTT`, `Audio`, `Logbook`, `Integrācija`, `Modemi`, `Advanced`. Sadaļa `Logbook` saglabā nosaukumu, bet tas nav klasiskais fldigi logbook: tur ir tikai ADIF. Simple režīms ir noklusējums; zema līmeņa Hamlib, backend, device string, XML-RPC un citi tehniskie parametri tiek pārvietoti uz Advanced. Paredzēts vednis: callsign -> stacijas dati -> radio -> ports -> CAT -> PTT -> audio -> testi -> saglabāt profilu.
@@ -70,7 +70,8 @@ Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runti
 - Alternatīvie izsaukuma signāli (piem. `YL3GBC/P`, `YL3GBC/AM`, `SM/YL3GBC`) tiek reģistrēti profilā. Katram darbības periodam jānorāda datums no–līdz, lokators un pasākums; pasākuma lauks ir obligāts. Strādājot vēlreiz ar to pašu alternatīvo signālu, periods tiek norādīts no jauna.
 - Katram periodam savs neatkarīgs ADIF fails, piem. `yl3gbc_p_2026-06-20.adif`; pasākuma nosaukums tiek ierakstīts ADIF galvenē.
 - Profila DB tabulas: `profile` (callsign, note, created_at, updated_at), `settings` (tag, value; fldigi taga nosaukums un vērtība), `alt_callsigns` (callsign, kind: `parasts` vai `sacensību`), `alt_activations` (callsign, date_from, date_to, locator, event).
-- Automātiskā profila atvēršana glabājas globāli `fldigi_def.xml`.
+- fldigi bez profila nedarbojas. Profila izvēles logs atveras katrā palaišanā, profila izvēle ir obligāta un notiek tikai GUI logā (komandrindas profila izvēles nav). Ja profilu nav, logā tos var izveidot ar `Jauns profils`. `Atcelt` vai loga aizvēršana aizver fldigi.
+- Loga teksti kodā ir angliski (gettext), latviešu tulkojums `po/lv.po`; logs ir latviski, ja sistēmas valoda ir latviešu. Pirms oficiālas publicēšanas jāatjauno `po/fldigi.pot`.
 - Profila izvēles logā pamata izsaukuma signāls ir augšējā rindā; zem tā parādās apakšsignāli, ar kuriem ir strādāts, katrs ar periodu, QSO skaitu un pasākumu. Kolonna `QSO` katrā rindā rāda tikai attiecīgā ADIF faila QSO skaitu.
 - `Atvērt` uz apakšsignāla rindas atver profilu un uzreiz strādā ar šo apakšsignālu šajā periodā.
 - Logā katram apakšsignālam redzams tikai pašreizējais periods. Perioda ADIF tiek automātiski pārvietots uz `~/.fldigi/profiles/<CALL>/archive/` nākamajā dienā pēc pasākuma beigu datuma plkst. 00:00 UTC (piem. pasākums beidzas 18.11.2026, arhīvā 19.11.2026 00:00 UTC) un logā vairs nav redzams; fails netiek dzēsts. Jaunu periodu sāk, esošajam alternatīvajam signālam nomainot sākuma un beigu datumu un pasākumu; atkārtoti reģistrēt signālu nevajag.
