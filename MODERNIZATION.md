@@ -63,6 +63,16 @@ Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runti
 - WinKeyer sakaru iestatījumi glabājas `progStatus` (`fldigi.prefs`), nevis `progdefaults`, tāpēc profila slānim jāaptver arī tie.
 - JTDX tipa PTT `VOX / CAT / DTR / RTS` būs normalizēts lietotāja slānis virs esošās fldigi PTT loģikas.
 
+## Profilu glabāšana
+- Katram profilam sava mape `~/.fldigi/profiles/<CALL>/`; mapes nosaukums ir pamata izsaukuma signāls lielajiem burtiem. Veidojot jaunu profilu, fldigi pamata izsaukuma signālu automātiski pārvērš lielajos burtos.
+- Profils var būt tikai pamata izsaukuma signāls; izsaukuma signāli ar `/` nekad nav profili.
+- Faili profila mapē ir ar mazajiem burtiem; `/` failu nosaukumos aizvieto ar `_`. `<call>.duckdb` ir profila DB, `<call>.adif` ir pamata signāla kontroles ADIF.
+- Alternatīvie izsaukuma signāli (piem. `YL3GBC/P`, `YL3GBC/AM`, `SM/YL3GBC`) tiek reģistrēti profilā. Katram darbības periodam jānorāda datums no–līdz, lokators un pasākums; pasākuma lauks ir obligāts. Strādājot vēlreiz ar to pašu alternatīvo signālu, periods tiek norādīts no jauna.
+- Katram periodam savs neatkarīgs ADIF fails, piem. `yl3gbc_p_2026-06-20.adif`; pasākuma nosaukums tiek ierakstīts ADIF galvenē.
+- Profila DB tabulas: `profile` (callsign, note, created_at, updated_at), `settings` (tag, value; fldigi taga nosaukums un vērtība), `alt_callsigns` (callsign), `alt_activations` (callsign, date_from, date_to, locator, event).
+- Automātiskā profila atvēršana glabājas globāli `fldigi_def.xml`.
+- Atvērts jautājums: vai kolonna `QSO` rāda tikai pamata signāla ADIF QSO skaitu vai visu profila ADIF failu kopsummu.
+
 ## CW / RTTY / PSK makrosu varianti
 - Izmantojam jau esošo fldigi makrosu paneli un tā fiziskos makrosu taustiņus; jaunu makrosu paneli neveidojam.
 - Izvēloties CW, RTTY vai PSK, parādās neliela papildizvēlne `Normal / Contest / DX`.
