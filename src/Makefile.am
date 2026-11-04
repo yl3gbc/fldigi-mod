@@ -20,6 +20,11 @@ fldigi_LDFLAGS = @FLDIGI_BUILD_LDFLAGS@
 fldigi_LDADD = @FLDIGI_BUILD_LDADD@
 fldigi_CPPFLAGS += @DUCKDB_CFLAGS@
 fldigi_LDADD += @DUCKDB_LIBS@
+# fldigi loads its own copy of libduckdb.so from $(pkglibdir), so a DuckDB
+# upgrade in the build prefix does not change the library fldigi runs with.
+# The build prefix is only a fallback for running fldigi before install.
+fldigi_LDFLAGS += -Wl,-rpath,$(pkglibdir) @DUCKDB_RPATH@
+DUCKDB_LIBDIR = @DUCKDB_LIBDIR@
 
 flarq_CPPFLAGS = -DBUILD_FLARQ -DLOCALEDIR=\"$(localedir)\" @FLARQ_BUILD_CPPFLAGS@
 flarq_CXXFLAGS = @FLARQ_BUILD_CXXFLAGS@
@@ -348,6 +353,10 @@ endif
 
 install-exec-local:
 if WANT_FLDIGI
+	if test -n "$(DUCKDB_LIBDIR)"; then \
+	    $(mkinstalldirs) $(DESTDIR)$(pkglibdir); \
+	    $(INSTALL_DATA) $(DUCKDB_LIBDIR)/libduckdb.so $(DESTDIR)$(pkglibdir)/libduckdb.so; \
+	fi
 	if test -f $(srcdir)/../scripts/ftp_kml_files.sh; then \
 	    $(mkinstalldirs) $(DESTDIR)/$(bindir); \
         $(INSTALL_SCRIPT) $(srcdir)/../scripts/ftp_kml_files.sh $(DESTDIR)/$(bindir); \
@@ -404,6 +413,7 @@ endif
 
 uninstall-local:
 if WANT_FLDIGI
+	rm -f $(DESTDIR)$(pkglibdir)/libduckdb.so
 	rm -f $(DESTDIR)/$(datadir)/pixmaps/fldigi.xpm
 	rm -f $(DESTDIR)/$(datadir)/applications/fldigi.desktop
 	rm -fr $(DESTDIR)/$(datadir)/fldigi

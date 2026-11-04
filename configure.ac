@@ -289,10 +289,14 @@ ac_cv_duckdb=no
 if test "x$ac_cv_want_fldigi" = "xyes"; then
     if test -n "$ac_cv_duckdb_dir" && test "x$ac_cv_duckdb_dir" != "xyes"; then
         DUCKDB_CFLAGS="-I$ac_cv_duckdb_dir/include"
-        DUCKDB_LIBS="-L$ac_cv_duckdb_dir/lib -Wl,-rpath,$ac_cv_duckdb_dir/lib -lduckdb"
+        DUCKDB_LIBS="-L$ac_cv_duckdb_dir/lib -lduckdb"
+        DUCKDB_LIBDIR="$ac_cv_duckdb_dir/lib"
+        DUCKDB_RPATH="-Wl,-rpath,$ac_cv_duckdb_dir/lib"
     else
         DUCKDB_CFLAGS=""
         DUCKDB_LIBS="-lduckdb"
+        DUCKDB_LIBDIR=""
+        DUCKDB_RPATH=""
     fi
     ac_duckdb_save_CPPFLAGS="$CPPFLAGS"
     ac_duckdb_save_LIBS="$LIBS"
@@ -311,6 +315,8 @@ if test "x$ac_cv_want_fldigi" = "xyes"; then
 fi
 AC_SUBST([DUCKDB_CFLAGS])
 AC_SUBST([DUCKDB_LIBS])
+AC_SUBST([DUCKDB_LIBDIR])
+AC_SUBST([DUCKDB_RPATH])
 
 ### X11
 # Set ac_cv_x to yes/no
