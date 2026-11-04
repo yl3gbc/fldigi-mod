@@ -71,7 +71,10 @@ Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runti
 - Katram periodam savs neatkarīgs ADIF fails, piem. `yl3gbc_p_2026-06-20.adif`; pasākuma nosaukums tiek ierakstīts ADIF galvenē.
 - Profila DB tabulas: `profile` (callsign, note, created_at, updated_at), `settings` (tag, value; fldigi taga nosaukums un vērtība), `alt_callsigns` (callsign), `alt_activations` (callsign, date_from, date_to, locator, event).
 - Automātiskā profila atvēršana glabājas globāli `fldigi_def.xml`.
-- Atvērts jautājums: vai kolonna `QSO` rāda tikai pamata signāla ADIF QSO skaitu vai visu profila ADIF failu kopsummu.
+- Profila izvēles logā pamata izsaukuma signāls ir augšējā rindā; zem tā parādās apakšsignāli, ar kuriem ir strādāts, katrs ar periodu, QSO skaitu un pasākumu. Kolonna `QSO` katrā rindā rāda tikai attiecīgā ADIF faila QSO skaitu.
+- `Atvērt` uz apakšsignāla rindas atver profilu un uzreiz strādā ar šo apakšsignālu šajā periodā.
+- Logā katram apakšsignālam redzams tikai pēdējais periods. Kad pasākums beidzies un ar to pašu apakšsignālu strādā no jauna, vecā perioda ADIF tiek pārvietots uz `~/.fldigi/profiles/<CALL>/archive/` un logā vairs nav redzams; fails netiek dzēsts.
+- Profila logā ir poga `Arhīvs`, kas parāda arhivētos periodus tikai lasīšanai, lai nejauši nepārrakstītu nevienu QSO.
 
 ## CW / RTTY / PSK makrosu varianti
 - Izmantojam jau esošo fldigi makrosu paneli un tā fiziskos makrosu taustiņus; jaunu makrosu paneli neveidojam.
