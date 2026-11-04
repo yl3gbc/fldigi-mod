@@ -60,30 +60,30 @@ void Progress::draw()
   // Draw the box and label...
 	if (progress > 0) {
 		Fl_Color c = labelcolor();
-		labelcolor(fl_contrast(labelcolor(), color2()));
+		labelcolor(fl_contrast(labelcolor(), selection_color()));
 
 		if (direction == HORIZONTAL) {
-			fl_clip(x(), y(), progress, h());
-			draw_box(box(), x(), y(), w(), h(), active_r() ? color2() : fl_inactive(color2()));
+			fl_push_clip(x(), y(), progress, h());
+			draw_box(box(), x(), y(), w(), h(), active_r() ? selection_color() : fl_inactive(selection_color()));
 			draw_label(tx, y() + by, tw, h() - bh);
 			fl_pop_clip();
 
 			labelcolor(c);
 
-			fl_clip(x() + progress, y(), tw - progress, h());
+			fl_push_clip(x() + progress, y(), tw - progress, h());
 			draw_box(box(), x(), y(), w(), h(), active_r() ? color() : fl_inactive(color()));
 			draw_label(tx, y() + by, tw, h() - bh);
 			fl_pop_clip();
 		} else {
-			fl_clip(x(), y(), w(), h() - progress);
+			fl_push_clip(x(), y(), w(), h() - progress);
 			draw_box(box(), x(), y(), w(), h(), active_r() ? color() : fl_inactive(color()));
 //			draw_label(tx, y() + by, tw, h() - bh);
 			fl_pop_clip();
 
 			labelcolor(c);
 
-			fl_clip(x(), y() + h() - progress, w(), progress );
-			draw_box(box(), x(), y(), w(), h(), active_r() ? color2() : fl_inactive(color2()));
+			fl_push_clip(x(), y() + h() - progress, w(), progress );
+			draw_box(box(), x(), y(), w(), h(), active_r() ? selection_color() : fl_inactive(selection_color()));
 //			draw_label(tx, y() + by, tw, h() - bh);
 			fl_pop_clip();
 		}

@@ -364,15 +364,15 @@ void create_spectrum_viewer()
 	spectrum_viewer->callback((Fl_Callback *)cb_spectrum_viewer);
 
 	if (progStatus.x_graticule) {
-		fftmon_menu[2].setonly();
+		fftmon_menu[2].setonly(fftmon_menu);
 		fftscope->x_graticule(true);
 		fftscope->y_graticule(false);
 	} else if (progStatus.y_graticule) {
-		 fftmon_menu[3].setonly();
+		 fftmon_menu[3].setonly(fftmon_menu);
 		fftscope->x_graticule(false);
 		fftscope->y_graticule(true);
 	} else {
-		fftmon_menu[4].setonly();
+		fftmon_menu[4].setonly(fftmon_menu);
 		fftscope->x_graticule(true);
 		fftscope->y_graticule(true);
 	}

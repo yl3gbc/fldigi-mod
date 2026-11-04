@@ -6134,9 +6134,11 @@ void cb_mnu_wf_all(Fl_Menu_* w, void *d)
 	wf->UI_select(progStatus.WF_UI = w->mvalue()->value());
 }
 
+extern Fl_Menu_Item menu_[];
+
 void cb_mnu_riglog_all(Fl_Menu_* w, void *d)
 {
-	getMenuItem(w->mvalue()->label())->setonly();
+	getMenuItem(w->mvalue()->label())->setonly(menu_);
 	progStatus.Rig_Log_UI = false;
 	progStatus.NO_RIGLOG = false;
 
@@ -6145,7 +6147,7 @@ void cb_mnu_riglog_all(Fl_Menu_* w, void *d)
 
 void cb_mnu_riglog_partial(Fl_Menu_* w, void *d)
 {
-	getMenuItem(w->mvalue()->label())->setonly();
+	getMenuItem(w->mvalue()->label())->setonly(menu_);
 	progStatus.Rig_Log_UI = true;
 	progStatus.NO_RIGLOG = false;
 
@@ -6155,7 +6157,7 @@ void cb_mnu_riglog_partial(Fl_Menu_* w, void *d)
 
 void cb_mnu_riglog_none(Fl_Menu_* w, void *d)
 {
-	getMenuItem(w->mvalue()->label())->setonly();
+	getMenuItem(w->mvalue()->label())->setonly(menu_);
 	progStatus.NO_RIGLOG = true;
 	progStatus.Rig_Log_UI = false;
 

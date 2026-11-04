@@ -101,7 +101,7 @@ void plot_xy::draw()
 	W = w() - 4;
 	H = h() - 4;
 
-	fl_clip(X, Y, W, H);
+	fl_push_clip(X, Y, W, H);
 	fl_color(_bk_color);
 	fl_rectf(X, Y, W, H);
 

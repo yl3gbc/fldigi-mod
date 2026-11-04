@@ -452,7 +452,7 @@ void Fl_PopCal::popshow ()
 void Fl_PopCal::pophide ()
 {
   hide ();
-  Fl::release();
+  Fl::grab(0);
 }   
 
 void Fl_PopCal::popcal_cb_i (Fl_Widget *v, long d)
