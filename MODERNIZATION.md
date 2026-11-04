@@ -69,7 +69,7 @@ Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runti
 - Faili profila mapē ir ar mazajiem burtiem; `/` failu nosaukumos aizvieto ar `_`. `<call>.duckdb` ir profila DB, `<call>.adif` ir pamata signāla kontroles ADIF.
 - Alternatīvie izsaukuma signāli (piem. `YL3GBC/P`, `YL3GBC/AM`, `SM/YL3GBC`) tiek reģistrēti profilā. Katram darbības periodam jānorāda datums no–līdz, lokators un pasākums; pasākuma lauks ir obligāts. Strādājot vēlreiz ar to pašu alternatīvo signālu, periods tiek norādīts no jauna.
 - Katram periodam savs neatkarīgs ADIF fails, piem. `yl3gbc_p_2026-06-20.adif`; pasākuma nosaukums tiek ierakstīts ADIF galvenē.
-- Profila DB tabulas: `profile` (callsign, note, created_at, updated_at), `settings` (tag, value; fldigi taga nosaukums un vērtība), `alt_callsigns` (callsign), `alt_activations` (callsign, date_from, date_to, locator, event).
+- Profila DB tabulas: `profile` (callsign, note, created_at, updated_at), `settings` (tag, value; fldigi taga nosaukums un vērtība), `alt_callsigns` (callsign, kind: `parasts` vai `sacensību`), `alt_activations` (callsign, date_from, date_to, locator, event).
 - Automātiskā profila atvēršana glabājas globāli `fldigi_def.xml`.
 - Profila izvēles logā pamata izsaukuma signāls ir augšējā rindā; zem tā parādās apakšsignāli, ar kuriem ir strādāts, katrs ar periodu, QSO skaitu un pasākumu. Kolonna `QSO` katrā rindā rāda tikai attiecīgā ADIF faila QSO skaitu.
 - `Atvērt` uz apakšsignāla rindas atver profilu un uzreiz strādā ar šo apakšsignālu šajā periodā.
@@ -77,7 +77,7 @@ Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runti
 - Profila logā ir poga `Arhīvs`, kas parāda arhivētos periodus tikai lasīšanai, lai nejauši nepārrakstītu nevienu QSO.
 - Profila rediģēšanas logā ir cilnes `Stacija`, `Radio`, `Audio` un `Kontests`. `Stacija`: izsaukuma signāls (rakstot automātiski lielie burti), vārds, QTH, lokators, antena, piezīme un neobligāti alternatīvie izsaukuma signāli. `Radio` kā JTDX/WSJT-X: ražotājs, modelis, CAT ports, ātrums, `Test CAT`, PTT `VOX / CAT / DTR / RTS`, ports, `Tx delay`, tonis pirms raidīšanas (`pretone`), `Share PTT port`, `Test PTT`. `Audio`: Input un Output ierīce; tehniskie parametri paliek Advanced.
 - Cilnē `Kontests` tiek savākti visi kontesta iestatījumi no visas programmas (pašreizējās Configure lapas `Contests/General`, `Contests/Info`, `Contests/Categories`, `Contests/Field Day`, `Contests/JOTA School`).
-- Sacensībās QSO uzreiz aiziet uz žurnālu pa UDP. Kontesta režīma QSO tiek rakstīti neatkarīgā ADIF failā tā profila mapē ar sacensību nosaukumu un gadu, piem. `~/.fldigi/profiles/YL3GBC/cq_ww_rtty_2026.adif`; sacensību beigās no tiem tiek izveidots Cabrillo fails.
+- Kontesta režīms nav piesaistīts konkrētam signālam: to var ieslēgt ar pamata signālu, ar alternatīvo signālu (piem. `/P` pasākuma laikā) vai ar speciālo sacensību signālu, kas profilā reģistrēts kā alternatīvais signāls ar tipu `sacensību`. Sacensībās QSO uzreiz aiziet uz žurnālu pa UDP. Kontesta režīma QSO tiek rakstīti neatkarīgā ADIF failā tā profila mapē; nosaukumā ir signāls, ar kuru strādāja, sacensību nosaukums un gads, piem. `yl3gbc_cq_ww_rtty_2026.adif`, `yl3gbc_p_cq_ww_rtty_2026.adif`, `yl7a_cq_ww_rtty_2026.adif`. Sacensību beigās no šī faila tiek izveidots Cabrillo fails ar to signālu, ar kuru strādāja.
 
 ## CW / RTTY / PSK makrosu varianti
 - Izmantojam jau esošo fldigi makrosu paneli un tā fiziskos makrosu taustiņus; jaunu makrosu paneli neveidojam.
