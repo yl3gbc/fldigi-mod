@@ -23,7 +23,7 @@ Configure tiek organizēts pēc lietotāja uzdevumiem: `Radio`, `PTT`, `Audio`, 
 Radio sadaļā lietotājs izvēlas ražotāju un modeli, tehniskās Hamlib detaļas pēc iespējas nosakām automātiski. PTT pēc JTDX principa: savstarpēji izslēdzoši `VOX`, `CAT`, `DTR`, `RTS`, kā arī `Port`, `Share PTT port`, `Test PTT`, `Tx delay`. Audio pamata skatā tikai saprotami nosaukti Input/Output device; backend, sample rate, bufferi, latency un device string paliek Advanced.
 
 ## Logbook un QSO nodošana
-fldigi nav un nebūs savas logbook. `logbook.adif` fails, tā ielasīšana un saglabāšana un logbook logs tiek izņemti. QSO tiek nodots ārējam žurnālam pa UDP kā ADIF ieraksts (esošais `post_udp_log()`). Visi Mac un Linux žurnāli atbalsta UDP; mērķis ir vienkārša un pareiza UDP pieslēgšana un konfigurācija. Dažiem žurnāliem UDP adrese un ports jāievada manuāli, tāpēc konfigurācijā tie paliek rediģējami. Jāuzraksta rokasgrāmatas, kā fldigi pieslēgt un nokonfigurēt UDP savienojumu ar katru populāro Mac un Linux žurnālu. Dublikātu pārbaude pagaidām notiek caur KLog. Sūtīšanu uz eQSL, LoTW, ClubLog, QRZ un citiem tiešsaistes žurnāliem veic KLog vai cits žurnāls; fldigi šīs funkcijas tiek izņemtas.
+fldigi nav un nebūs pilnas logbook. Katram profilam ir savs klasisks ADIF fails kontrolei: ADIF faila ceļš (`LOGBOOKFILENAME`) kļūst par profila lauku, un fldigi tajā ieraksta QSO. Logbook logs paliek tikai kā QSO uzskaite: izsaukuma signāls, datums, laiks, diapazons, režīms, RST, operatora vārds un QTH; meklēšanas funkcijas nav. Ārējo servisu nav; vienīgais izņēmums ir operatora vārda un QTH atrašana caur qrz.com un HamQTH. Vārda un QTH rādīšana uzskaitē ir sākotnējā izvēle; ja nederēs, to mainīsim. QSO tiek nodots ārējam žurnālam pa UDP kā ADIF ieraksts (esošais `post_udp_log()`). Visi Mac un Linux žurnāli atbalsta UDP; mērķis ir vienkārša un pareiza UDP pieslēgšana un konfigurācija. Dažiem žurnāliem UDP adrese un ports jāievada manuāli, tāpēc konfigurācijā tie paliek rediģējami. Jāuzraksta rokasgrāmatas, kā fldigi pieslēgt un nokonfigurēt UDP savienojumu ar katru populāro Mac un Linux žurnālu. Dublikātu pārbaude pagaidām notiek caur KLog. Sūtīšanu uz eQSL, LoTW, ClubLog, QRZ un citiem tiešsaistes žurnāliem veic KLog vai cits žurnāls; fldigi šīs funkcijas tiek izņemtas.
 
 ## Žurnālu integrācija
 fldigi sadarbojas ar jebkuru Mac un Linux radioamatieru žurnālu (ap 20 populāru, regulāri parādās jauni) caur UDP. YL3GBC modernizētais KLog ir galvenais testa žurnāls. Jāizpēta arī vecā KLog/fldigi integrācija un fldigi XML-RPC.
@@ -41,7 +41,7 @@ Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runti
 7. Izpētīt veco KLog/fldigi integrāciju.
 8. Izpētīt fldigi logbook un UDP datu plūsmu.
 9. Definēt DuckDB profilu modeli.
-10. Izņemt fldigi logbook, `logbook.adif` un tiešsaistes žurnālu funkcijas.
+10. Vienkāršot fldigi logbook logu līdz QSO uzskaitei, izņemt meklēšanu un ārējos servisus (izņemot qrz.com un HamQTH vārda un QTH atrašanu); paturēt profila ADIF kontroles failu.
 11. Sakārtot UDP QSO nodošanu žurnāliem.
 12. Uzrakstīt UDP pieslēgšanas un konfigurēšanas rokasgrāmatas žurnāliem.
 13. Ieviest `.ts` tulkošanas plūsmu.
@@ -57,6 +57,7 @@ Tulkotāju darba formāts paredzēts Qt Linguist `.ts`, saglabājot fldigi runti
 - Profilam pieder Radio/CAT, PTT, audio ierīces, logbook ceļš un ar konkrēto staciju saistītās integrācijas.
 - GUI tēma, fonti, logu izmēri un citi programmas vispārīgie iestatījumi paliek globāli.
 - Profili un to iestatījumi glabājas DuckDB. Profilam pieder arī UDP žurnāla pieslēgums (adrese, ports).
+- Profilam pieder savs kontroles ADIF fails; profila izvēles loga kolonna `QSO` rāda QSO skaitu no šī faila.
 - JTDX tipa PTT `VOX / CAT / DTR / RTS` būs normalizēts lietotāja slānis virs esošās fldigi PTT loģikas.
 
 ## CW / RTTY / PSK makrosu varianti
