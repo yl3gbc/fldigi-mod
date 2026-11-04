@@ -279,6 +279,39 @@ AC_FLDIGI_PKG_CHECK([hamlib], [hamlib >= 1.2.4], [yes], [yes],
 AX_COMPARE_VERSION([$pkg_hamlib_version], [le], [1.2.9], [need_locator_c=yes], [need_locator_c=no])
 AM_CONDITIONAL([NEED_HAMLIB_LOCATOR], [test "$need_locator_c" = "yes"])
 
+### duckdb
+# Profile storage (see MODERNIZATION.md). Required for fldigi.
+# Substitute DUCKDB_CFLAGS and DUCKDB_LIBS in Makefile
+AC_ARG_WITH([duckdb],
+            AS_HELP_STRING([--with-duckdb=DIR], [DuckDB C API prefix with DIR/include and DIR/lib]),
+            [ac_cv_duckdb_dir="$withval"], [ac_cv_duckdb_dir=""])
+ac_cv_duckdb=no
+if test "x$ac_cv_want_fldigi" = "xyes"; then
+    if test -n "$ac_cv_duckdb_dir" && test "x$ac_cv_duckdb_dir" != "xyes"; then
+        DUCKDB_CFLAGS="-I$ac_cv_duckdb_dir/include"
+        DUCKDB_LIBS="-L$ac_cv_duckdb_dir/lib -Wl,-rpath,$ac_cv_duckdb_dir/lib -lduckdb"
+    else
+        DUCKDB_CFLAGS=""
+        DUCKDB_LIBS="-lduckdb"
+    fi
+    ac_duckdb_save_CPPFLAGS="$CPPFLAGS"
+    ac_duckdb_save_LIBS="$LIBS"
+    CPPFLAGS="$CPPFLAGS $DUCKDB_CFLAGS"
+    LIBS="$DUCKDB_LIBS $LIBS"
+    AC_MSG_CHECKING([for DuckDB C API])
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <duckdb.h>]],
+                                    [[return duckdb_library_version() == 0;]])],
+                   [ac_cv_duckdb=yes], [ac_cv_duckdb=no])
+    AC_MSG_RESULT([$ac_cv_duckdb])
+    CPPFLAGS="$ac_duckdb_save_CPPFLAGS"
+    LIBS="$ac_duckdb_save_LIBS"
+    if test "x$ac_cv_duckdb" != "xyes"; then
+        AC_MSG_ERROR([DuckDB C API not found, use --with-duckdb=DIR])
+    fi
+fi
+AC_SUBST([DUCKDB_CFLAGS])
+AC_SUBST([DUCKDB_LIBS])
+
 ### X11
 # Set ac_cv_x to yes/no
 # Define USE_X in config.h
@@ -386,5 +419,6 @@ if test "x$ac_cv_want_fldigi" = "xyes"; then
   flxmlrpc .................... $ac_xmlrpc_report
 
   hamlib ...................... $ac_cv_hamlib
+  duckdb ...................... $ac_cv_duckdb
 ])
 fi
