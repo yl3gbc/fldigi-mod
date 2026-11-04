@@ -385,14 +385,12 @@ bool configuration::openProfile(const std::string& callsign, std::string& error)
 		if (t == tag_map.end())
 			continue;
 		globals[t->first] = t->second->value();
-		if (settings.empty())
-			// New profile: start from the current configuration.
+		std::map<std::string, std::string>::const_iterator v = settings.find(t->first);
+		if (v == settings.end())
+			// Field not in the profile yet: start from the current configuration.
 			ok = store->set_setting(t->first, globals[t->first]);
-		else {
-			std::map<std::string, std::string>::const_iterator v = settings.find(t->first);
-			if (v != settings.end())
-				t->second->read(v->second.c_str());
-		}
+		else
+			t->second->read(v->second.c_str());
 	}
 	if (!ok)
 		error = store->last_error();

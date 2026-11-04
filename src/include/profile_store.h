@@ -54,6 +54,16 @@ public:
 	// <root>/<CALL>/<call>.duckdb
 	static std::string db_path(const std::string& root, const std::string& callsign);
 
+	// <root>/_arhivs/
+	static std::string archive_root(const std::string& root);
+
+	// Move the whole profile folder <root>/<CALL>/ unchanged to
+	// <root>/_arhivs/<CALL>/. When that already exists the archived folder
+	// gets a UTC time suffix: <CALL>_YYYYMMDD-HHMMSS. The profile must not
+	// be open. On success the archived folder is returned in archived.
+	static bool archive_profile(const std::string& root, const std::string& callsign,
+				    std::string& archived, std::string& error);
+
 	// Open the profile database, creating the profile folder, the database
 	// file and the tables when they do not exist yet. The callsign is
 	// normalized first and must be a base callsign.

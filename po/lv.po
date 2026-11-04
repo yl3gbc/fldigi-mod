@@ -82,3 +82,98 @@ msgstr "Piezīme"
 #: src/profiles/profile_dialog.cxx
 msgid "Open"
 msgstr "Atvērt"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Edit"
+msgstr "Rediģēt"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Delete"
+msgstr "Dzēst"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Select a profile first."
+msgstr "Vispirms izvēlies profilu."
+
+#: src/profiles/profile_dialog.cxx
+#, c-format
+msgid ""
+"Delete profile %s?\n"
+"\n"
+"The profile is moved unchanged to the archive."
+msgstr ""
+"Dzēst profilu %s?\n"
+"\n"
+"Profils bez izmaiņām tiek pārvietots uz arhīvu."
+
+#: src/profiles/profile_dialog.cxx
+#, c-format
+msgid ""
+"Could not archive profile %s:\n"
+"%s"
+msgstr ""
+"Neizdevās arhivēt profilu %s:\n"
+"%s"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Edit profile"
+msgstr "Profila rediģēšana"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Station"
+msgstr "Stacija"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Name:"
+msgstr "Vārds:"
+
+#: src/profiles/profile_dialog.cxx
+msgid "QTH:"
+msgstr "QTH:"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Locator:"
+msgstr "Lokators:"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Antenna:"
+msgstr "Antena:"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Save"
+msgstr "Saglabāt"
+
+#: src/profiles/profile_dialog.cxx
+msgid "Change"
+msgstr "Mainīt"
+
+#: src/profiles/profile_dialog.cxx
+#, c-format
+msgid ""
+"Change callsign from %s to %s?\n"
+"\n"
+"Profile %s is moved unchanged to the archive and a new\n"
+"profile %s is created with its settings."
+msgstr ""
+"Mainīt izsaukuma signālu no %s uz %s?\n"
+"\n"
+"Profils %s bez izmaiņām tiek pārvietots uz arhīvu, un tiek\n"
+"izveidots jauns profils %s ar tā iestatījumiem."
+
+#: src/profiles/profile_dialog.cxx
+#, c-format
+msgid ""
+"Could not read profile %s:\n"
+"%s"
+msgstr ""
+"Neizdevās nolasīt profilu %s:\n"
+"%s"
+
+#: src/profiles/profile_dialog.cxx
+#, c-format
+msgid ""
+"Could not save profile %s:\n"
+"%s"
+msgstr ""
+"Neizdevās saglabāt profilu %s:\n"
+"%s"

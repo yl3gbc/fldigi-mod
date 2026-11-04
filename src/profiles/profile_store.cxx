@@ -26,6 +26,7 @@
 #include <duckdb.h>
 
 #include <cctype>
+#include <ctime>
 #include <filesystem>
 #include <system_error>
 #include <vector>
@@ -101,6 +102,58 @@ std::string ProfileStore::db_path(const std::string& root, const std::string& ca
 	for (char& c : lower)
 		c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
 	return profile_dir(root, callsign) + lower + ".duckdb";
+}
+
+std::string ProfileStore::archive_root(const std::string& root)
+{
+	std::string dir(root);
+	if (!dir.empty() && dir.back() != '/')
+		dir += '/';
+	return dir + "_arhivs/";
+}
+
+bool ProfileStore::archive_profile(const std::string& root, const std::string& callsign,
+				   std::string& archived, std::string& error)
+{
+	std::string call = normalize_callsign(callsign);
+	if (!is_base_callsign(call)) {
+		error = "not a base callsign: " + callsign;
+		return false;
+	}
+	std::string base(root);
+	if (!base.empty() && base.back() != '/')
+		base += '/';
+	std::filesystem::path src(base + call);
+	std::error_code ec;
+	if (!std::filesystem::is_directory(src, ec)) {
+		error = "no profile folder " + src.string();
+		return false;
+	}
+	std::filesystem::path dest(archive_root(root) + call);
+	if (std::filesystem::exists(dest, ec)) {
+		char stamp[32];
+		std::time_t now = std::time(nullptr);
+		std::tm utc;
+		gmtime_r(&now, &utc);
+		std::strftime(stamp, sizeof(stamp), "_%Y%m%d-%H%M%S", &utc);
+		dest = archive_root(root) + call + stamp;
+		if (std::filesystem::exists(dest, ec)) {
+			error = "archive folder already exists: " + dest.string();
+			return false;
+		}
+	}
+	std::filesystem::create_directories(archive_root(root), ec);
+	if (ec) {
+		error = "cannot create " + archive_root(root) + ": " + ec.message();
+		return false;
+	}
+	std::filesystem::rename(src, dest, ec);
+	if (ec) {
+		error = "cannot move " + src.string() + " to " + dest.string() + ": " + ec.message();
+		return false;
+	}
+	archived = dest.string();
+	return true;
 }
 
 bool ProfileStore::set_error(const std::string& msg)

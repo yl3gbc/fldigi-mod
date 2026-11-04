@@ -81,6 +81,23 @@ int main()
 		check(p.remove_setting("MYCALL") && p.get_all_settings(all) && all.size() == 1, "remove setting");
 	}
 
+	{
+		std::string archived, err;
+		check(ProfileStore::archive_root(r) == r + "_arhivs/", "archive root");
+		check(ProfileStore::archive_profile(r, "yl3gbc", archived, err), "archive profile");
+		check(archived == r + "_arhivs/YL3GBC", "archived to _arhivs/YL3GBC");
+		check(!std::filesystem::exists(r + "YL3GBC", ec), "profile folder moved away");
+		check(std::filesystem::exists(r + "_arhivs/YL3GBC/yl3gbc.duckdb", ec), "database archived unchanged");
+		check(!ProfileStore::archive_profile(r, "YL3GBC", archived, err), "no profile, nothing to archive");
+		ProfileStore p;
+		check(p.open(r, "YL3GBC"), "create YL3GBC again");
+		p.close();
+		check(ProfileStore::archive_profile(r, "YL3GBC", archived, err), "archive second time");
+		check(archived.compare(0, (r + "_arhivs/YL3GBC_").size(), r + "_arhivs/YL3GBC_") == 0,
+		      "second archive gets time suffix");
+		check(std::filesystem::exists(r + "_arhivs/YL3GBC/yl3gbc.duckdb", ec), "first archive kept");
+	}
+
 	std::filesystem::remove_all(root, ec);
 
 	std::printf("%s\n", failures ? "FAIL" : "PASS");
