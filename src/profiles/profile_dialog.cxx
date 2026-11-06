@@ -44,6 +44,7 @@
 
 #include "gettext.h"
 #include "profile_dialog.h"
+#include "profile_radio.h"
 #include "profile_store.h"
 
 namespace {
@@ -188,6 +189,7 @@ struct EditProfile {
 	Fl_Input*         loc;
 	Fl_Input*         antenna;
 	Fl_Input*         note;
+	RadioTab*         radio;
 	std::string       root;
 	std::string       orig;
 	std::string       saved;
@@ -210,7 +212,8 @@ bool save_station(ProfileStore& store, const EditProfile* ep, const std::string&
 	       store.set_setting("MYNAME", ep->name->value()) &&
 	       store.set_setting("MYQTH", ep->qth->value()) &&
 	       store.set_setting("MYLOC", ep->loc->value()) &&
-	       store.set_setting("MYANTENNA", ep->antenna->value());
+	       store.set_setting("MYANTENNA", ep->antenna->value()) &&
+	       radio_tab_save(ep->radio, store);
 }
 
 // The callsign changes: the old profile is moved unchanged to the archive and
@@ -285,42 +288,39 @@ std::string edit_profile_dialog(const std::string& root, const std::string& call
 	ep.root = root;
 	ep.orig = callsign;
 
-	std::string note, name, qth, loc, antenna;
-	{
-		ProfileStore store;
-		if (!store.open(root, callsign)) {
-			fl_alert(_("Could not read profile %s:\n%s"), callsign.c_str(), store.last_error().c_str());
-			return std::string();
-		}
-		store.get_note(note);
-		name    = setting_or(store, "MYNAME", std::string());
-		qth     = setting_or(store, "MYQTH", std::string());
-		loc     = setting_or(store, "MYLOC", std::string());
-		antenna = setting_or(store, "MYANTENNA", std::string());
+	ProfileStore store;
+	if (!store.open(root, callsign)) {
+		fl_alert(_("Could not read profile %s:\n%s"), callsign.c_str(), store.last_error().c_str());
+		return std::string();
 	}
+	std::string note;
+	store.get_note(note);
 
-	ep.win = new Fl_Double_Window(460, 320, _("Edit profile"));
-	Fl_Tabs* tabs = new Fl_Tabs(10, 10, 440, 260);
-	Fl_Group* station = new Fl_Group(10, 35, 440, 235, _("Station"));
+	ep.win = new Fl_Double_Window(540, 410, _("Edit profile"));
+	Fl_Tabs* tabs = new Fl_Tabs(10, 10, 520, 355);
+	Fl_Group* station = new Fl_Group(10, 35, 520, 330, _("Station"));
 	ep.call = new Fl_Input(150, 50, 150, 25, _("Callsign:"));
 	ep.call->when(FL_WHEN_CHANGED);
 	ep.call->callback(cb_upper_call);
 	ep.call->value(callsign.c_str());
 	ep.name = new Fl_Input(150, 85, 290, 25, _("Name:"));
-	ep.name->value(name.c_str());
+	ep.name->value(setting_or(store, "MYNAME", std::string()).c_str());
 	ep.qth = new Fl_Input(150, 120, 290, 25, _("QTH:"));
-	ep.qth->value(qth.c_str());
+	ep.qth->value(setting_or(store, "MYQTH", std::string()).c_str());
 	ep.loc = new Fl_Input(150, 155, 100, 25, _("Locator:"));
-	ep.loc->value(loc.c_str());
+	ep.loc->value(setting_or(store, "MYLOC", std::string()).c_str());
 	ep.antenna = new Fl_Input(150, 190, 290, 25, _("Antenna:"));
-	ep.antenna->value(antenna.c_str());
+	ep.antenna->value(setting_or(store, "MYANTENNA", std::string()).c_str());
 	ep.note = new Fl_Input(150, 225, 290, 25, _("Note:"));
 	ep.note->value(note.c_str());
 	station->end();
+	ep.radio = radio_tab_create(10, 35, 520, 330, store);
 	tabs->end();
-	Fl_Button* cancel = new Fl_Button(250, 285, 95, 25, _("Cancel"));
+	// The profile must be closed while the window is open: saving may move it.
+	store.close();
+	Fl_Button* cancel = new Fl_Button(330, 375, 95, 25, _("Cancel"));
 	cancel->callback(cb_hide, ep.win);
-	Fl_Return_Button* save = new Fl_Return_Button(355, 285, 95, 25, _("Save"));
+	Fl_Return_Button* save = new Fl_Return_Button(435, 375, 95, 25, _("Save"));
 	save->callback(cb_edit_save, &ep);
 	ep.win->end();
 	ep.win->callback(cb_hide, ep.win);
@@ -329,6 +329,7 @@ std::string edit_profile_dialog(const std::string& root, const std::string& call
 	while (ep.win->shown())
 		Fl::wait();
 	delete ep.win;
+	radio_tab_delete(ep.radio);
 	return ep.saved;
 }
 

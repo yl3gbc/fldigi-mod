@@ -177,3 +177,87 @@ msgid ""
 msgstr ""
 "Neizdevās saglabāt profilu %s:\n"
 "%s"
+
+#: src/profiles/profile_radio.cxx
+msgid "Radio"
+msgstr "Radio"
+
+#: src/profiles/profile_radio.cxx
+msgid "Rig:"
+msgstr "Rācija:"
+
+#: src/profiles/profile_radio.cxx
+msgid "No CAT"
+msgstr "Bez CAT"
+
+#: src/profiles/profile_radio.cxx
+msgid "Other (set in Configure)"
+msgstr "Cits (iestatīts Configure)"
+
+#: src/profiles/profile_radio.cxx
+msgid "CAT port:"
+msgstr "CAT ports:"
+
+#: src/profiles/profile_radio.cxx
+msgid "Baud:"
+msgstr "Ātrums:"
+
+#: src/profiles/profile_radio.cxx
+msgid "flrig address:"
+msgstr "flrig adrese:"
+
+#: src/profiles/profile_radio.cxx
+msgid "Port:"
+msgstr "Ports:"
+
+#: src/profiles/profile_radio.cxx
+msgid "Test CAT"
+msgstr "Test CAT"
+
+#: src/profiles/profile_radio.cxx
+msgid "PTT:"
+msgstr "PTT:"
+
+#: src/profiles/profile_radio.cxx
+msgid "PTT port:"
+msgstr "PTT ports:"
+
+#: src/profiles/profile_radio.cxx
+msgid "Tx delay (ms):"
+msgstr "Tx aizture (ms):"
+
+#: src/profiles/profile_radio.cxx
+msgid "Tone before Tx (s):"
+msgstr "Tonis pirms Tx (s):"
+
+#: src/profiles/profile_radio.cxx
+msgid "Test PTT"
+msgstr "Test PTT"
+
+#: src/profiles/profile_radio.cxx
+msgid "Testing..."
+msgstr "Pārbauda..."
+
+#: src/profiles/profile_radio.cxx
+msgid "PTT ON"
+msgstr "PTT ieslēgts"
+
+#: src/profiles/profile_radio.cxx
+msgid "PTT OFF, test done"
+msgstr "PTT izslēgts, pārbaude pabeigta"
+
+#: src/profiles/profile_radio.cxx
+msgid "Hamlib cannot use this rig model."
+msgstr "Hamlib nevar izmantot šo rācijas modeli."
+
+#: src/profiles/profile_radio.cxx
+msgid "No answer from flrig."
+msgstr "flrig neatbild."
+
+#: src/profiles/profile_radio.cxx
+msgid "Cannot open "
+msgstr "Nevar atvērt "
+
+#: src/profiles/profile_radio.cxx
+msgid "Cannot set PTT line on "
+msgstr "Nevar ieslēgt PTT līniju portā "
