@@ -261,3 +261,23 @@ msgstr "Nevar atvērt "
 #: src/profiles/profile_radio.cxx
 msgid "Cannot set PTT line on "
 msgstr "Nevar ieslēgt PTT līniju portā "
+
+#: src/profiles/profile_audio.cxx
+msgid "Audio"
+msgstr "Audio"
+
+#: src/profiles/profile_audio.cxx
+msgid "Input (RX):"
+msgstr "Ievade (RX):"
+
+#: src/profiles/profile_audio.cxx
+msgid "Output (TX):"
+msgstr "Izvade (TX):"
+
+#: src/profiles/profile_audio.cxx
+msgid "(not connected)"
+msgstr "(nav pieslēgta)"
+
+#: src/profiles/profile_audio.cxx
+msgid "No sound device found"
+msgstr "Nav atrasta neviena skaņas ierīce"

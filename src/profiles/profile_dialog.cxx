@@ -44,6 +44,7 @@
 
 #include "gettext.h"
 #include "profile_dialog.h"
+#include "profile_audio.h"
 #include "profile_radio.h"
 #include "profile_store.h"
 
@@ -190,6 +191,7 @@ struct EditProfile {
 	Fl_Input*         antenna;
 	Fl_Input*         note;
 	RadioTab*         radio;
+	AudioTab*         audio;
 	std::string       root;
 	std::string       orig;
 	std::string       saved;
@@ -213,7 +215,8 @@ bool save_station(ProfileStore& store, const EditProfile* ep, const std::string&
 	       store.set_setting("MYQTH", ep->qth->value()) &&
 	       store.set_setting("MYLOC", ep->loc->value()) &&
 	       store.set_setting("MYANTENNA", ep->antenna->value()) &&
-	       radio_tab_save(ep->radio, store);
+	       radio_tab_save(ep->radio, store) &&
+	       audio_tab_save(ep->audio, store);
 }
 
 // The callsign changes: the old profile is moved unchanged to the archive and
@@ -315,6 +318,7 @@ std::string edit_profile_dialog(const std::string& root, const std::string& call
 	ep.note->value(note.c_str());
 	station->end();
 	ep.radio = radio_tab_create(10, 35, 520, 330, store);
+	ep.audio = audio_tab_create(10, 35, 520, 330, store);
 	tabs->end();
 	// The profile must be closed while the window is open: saving may move it.
 	store.close();
@@ -330,6 +334,7 @@ std::string edit_profile_dialog(const std::string& root, const std::string& call
 		Fl::wait();
 	delete ep.win;
 	radio_tab_delete(ep.radio);
+	audio_tab_delete(ep.audio);
 	return ep.saved;
 }
 

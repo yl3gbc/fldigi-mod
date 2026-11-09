@@ -4,6 +4,7 @@
 src/main.cxx
 src/profiles/profile_dialog.cxx
 src/profiles/profile_radio.cxx
+src/profiles/profile_audio.cxx
 src/debug/debug.cxx
 src/dialogs/fl_digi.cxx
 src/dialogs/Viewer.cxx
